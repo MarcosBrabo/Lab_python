@@ -1,0 +1,1 @@
+{"tipo": "botella", "volumen": 408.0, "impacto": {"agua": 0.0, "energia": 0.0, "co2": 0.0}}
