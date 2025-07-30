@@ -1,1 +1,3 @@
 {"tipo": "botella", "volumen": 408.0, "impacto": {"agua": 0.0, "energia": 0.0, "co2": 0.0}}
+{"tipo": "lata", "tama\u00f1o": "peque\u00f1o", "factor_tama\u00f1o": 0.8, "impacto": {"agua": 4.0, "energia": 0.8, "co2": 0.4}}
+{"tipo": "botella", "tama\u00f1o": "mediano", "factor_tama\u00f1o": 1.0, "impacto": {"agua": 0.0, "energia": 0.0, "co2": 0.0}}

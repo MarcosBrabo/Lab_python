@@ -9,22 +9,52 @@ IMPACTO_RESIDUOS = {
     "cartón": {"agua": 2, "energia": 0.3, "co2": 0.1}
 }
 
+def clasificar_tamaño(cm):
+    if cm < 15:
+        return "pequeño", 0.8
+    elif 15 <= cm <= 30:
+        return "mediano", 1.0
+    else:
+        return "grande", 1.5
+
 def registrar_residuo():
-    tipo = input("Ingrese el tipo de residuo (ej: botella de plástico, lata, cartón): ").lower()
-    alto = float(input("Ingrese el alto del residuo en cm: "))
-    ancho = float(input("Ingrese el ancho del residuo en cm: "))
-    volumen = alto * ancho
+    tipo = input("Ingrese el tipo de residuo (botella de plastico, lata, cartón): ").strip().lower()
+
+    if tipo == "botella de plástico":
+        respuesta = input("¿Sabés la capacidad de la botella en litros? (si/no): ").strip().lower()
+        if respuesta == "si":
+            litros = float(input("Ingrese la capacidad de la botella en litros (ej: 2): "))
+            if litros >= 2:
+                tamaño, factor = "grande", 1.5
+            elif litros >= 1:
+                tamaño, factor = "mediano", 1.0
+            else:
+                tamaño, factor = "pequeño", 0.8
+        else:
+            alto = float(input("Ingrese el alto del residuo en cm: "))
+            ancho = float(input("Ingrese el ancho del residuo en cm: "))
+            tamaño, factor = clasificar_tamaño(alto)
+    else:
+        alto = float(input("Ingrese el alto del residuo en cm: "))
+        ancho = float(input("Ingrese el ancho del residuo en cm: "))
+        tamaño, factor = clasificar_tamaño(alto)
 
     reciclable = tipo in IMPACTO_RESIDUOS
     impacto = IMPACTO_RESIDUOS.get(tipo, {"agua": 0, "energia": 0, "co2": 0})
-    impacto_escalado = {k: v * volumen / 1000 for k, v in impacto.items()}
+    impacto_escalado = {k: round(v * factor, 2) for k, v in impacto.items()}
 
     with open(HISTORIAL_FILE, "a") as f:
-        f.write(json.dumps({"tipo": tipo, "volumen": volumen, "impacto": impacto_escalado}) + "\n")
+        f.write(json.dumps({
+            "tipo": tipo,
+            "tamaño": tamaño,
+            "factor_tamaño": factor,
+            "impacto": impacto_escalado
+        }) + "\n")
 
     print("\nResultado:")
     if reciclable:
         print(f"✅ El residuo '{tipo}' es reciclable.")
+        print(f"Tamaño estimado: {tamaño} (factor {factor})")
         print(f"Impacto estimado: {impacto_escalado['agua']}L de agua, "
               f"{impacto_escalado['energia']}kWh de energía, {impacto_escalado['co2']}kg de CO₂.")
     else:
@@ -39,9 +69,9 @@ def ver_impacto_acumulado():
                 for k in total:
                     total[k] += data["impacto"].get(k, 0)
     print("\nImpacto acumulado:")
-    print(f"💧 Agua ahorrada: {total['agua']}L")
-    print(f"⚡ Energía ahorrada: {total['energia']}kWh")
-    print(f"🌱 CO₂ reducido: {total['co2']}kg")
+    print(f"💧 Agua ahorrada: {round(total['agua'], 2)}L")
+    print(f"⚡ Energía ahorrada: {round(total['energia'], 2)}kWh")
+    print(f"🌱 CO₂ reducido: {round(total['co2'], 2)}kg")
 
 def limpiar_historial():
     if os.path.exists(HISTORIAL_FILE):
@@ -66,7 +96,7 @@ def menu():
         elif opcion == "3":
             limpiar_historial()
         elif opcion == "4":
-            print("¡Gracias por usar RecyclingApp!")
+            print("¡Gracias por usar ReciclApp! 🌿")
             break
         else:
             print("Opción inválida. Intente nuevamente.")
