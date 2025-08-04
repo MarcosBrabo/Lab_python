@@ -1,11 +1,13 @@
-import os
-import json
-import unicodedata
+# === IMPORTADOS ===
+import os       # Para interactuar con el sistema operativo (verificar o borrar archivos)
+import json     # Para convertir datos a formato JSON (estructura de texto )
+import unicodedata  # Para normalizar caracteres (por ejemplo, eliminar tildes)
 
-# Archivo donde se guarda el historial
+# === VARIABLES GLOBALES ===
+# Nombre del archivo donde se guarda el historial de residuos
 HISTORIAL_FILE = "historial_reciclaje.txt"
 
-# Impacto ecológico por tipo de residuo (valores aproximados)
+# Diccionario que contiene el impacto ecológico estimado segun el tipo de residuo (agua, energía, CO₂)
 IMPACTO_RESIDUOS = {
     "plástico": {"agua": 3, "energia": 0.5, "co2": 0.2},
     "lata": {"agua": 5, "energia": 1.0, "co2": 0.5},
@@ -15,19 +17,22 @@ IMPACTO_RESIDUOS = {
     "tetrapak": {"agua": 3, "energia": 0.6, "co2": 0.25},
     "textil": {"agua": 6, "energia": 1.5, "co2": 0.4},
     "electrónico": {"agua": 10, "energia": 5.0, "co2": 2.0},
-    "ninguna de estas": {"agua": 0, "energia": 0, "co2": 0},
     "no reciclable (pañales, papel sucio, pilas, etc)": {"agua": 0, "energia": 0, "co2": 0}
-    
 }
 
-# Elimina tildes del texto para una comparación más segura
+# === FUNCIONES DEL PROGRAMA ===
+
+# Elimina tildes del texto para normalizar y evitar errores al comparar strings
+# Ejemplo: "plástico" -> "plastico"
 def quitar_tildes(texto):
     return ''.join(
         c for c in unicodedata.normalize('NFD', texto)
         if unicodedata.category(c) != 'Mn'
     )
 
-# Clasifica el tamaño según el alto del residuo
+# Clasifica el tamaño del residuo según su altura en cm (aproxiamados por el usuario)
+# Devuelve el nombre del tamaño y un factor multiplicador para calcular el impacto
+# Ejemplo: altura = 35 cm -> ("grande", 1.5)
 def clasificar_tamaño(cm):
     if cm < 15:
         return "pequeño", 0.8
@@ -36,7 +41,9 @@ def clasificar_tamaño(cm):
     else:
         return "grande", 1.5
 
-# Registrar un nuevo residuo
+# Registra un nuevo residuo ingresado por el usuario
+# Pide tipo de residuo, descripción y medidas, calcula el impacto ecológico
+# Guarda los datos en el archivo historial_reciclaje.txt
 def registrar_residuo():
     print("\n¿Qué tipo de residuo desea registrar?")
     opciones = list(IMPACTO_RESIDUOS.keys())
@@ -51,7 +58,6 @@ def registrar_residuo():
     tipo_seleccionado = opciones[int(seleccion) - 1]
     tipo_normalizado = quitar_tildes(tipo_seleccionado.lower())
 
-    # ⚠️ Si es un residuo no reciclable, avisamos y confirmamos si desea continuar
     if "no reciclable" in tipo_normalizado:
         print("\n⚠️ Este residuo NO se puede reciclar.")
         print("❌ Ejemplos: pañales, papel higiénico, papel sucio, colillas, pilas usadas, residuos orgánicos contaminados.")
@@ -62,7 +68,7 @@ def registrar_residuo():
 
     descripcion = input("Ingrese una descripción del residuo : ").strip()
 
-    # Si es botella de plástico, se pregunta por la capacidad
+    # Si es una botella de plástico, se pregunta si conoce su capacidad en litros
     if "botella" in tipo_normalizado and "plastico" in tipo_normalizado:
         respuesta = input("¿Sabés la capacidad de la botella en litros? (si/no): ").strip().lower()
         if respuesta == "si":
@@ -85,7 +91,7 @@ def registrar_residuo():
     impacto = IMPACTO_RESIDUOS[tipo_seleccionado]
     impacto_escalado = {k: round(v * factor, 2) for k, v in impacto.items()}
 
-    # Guarda en historial
+    # Guarda los datos como una línea JSON en el archivo
     with open(HISTORIAL_FILE, "a") as f:
         f.write(json.dumps({
             "tipo": tipo_seleccionado,
@@ -95,14 +101,13 @@ def registrar_residuo():
             "impacto": impacto_escalado
         }) + "\n")
 
-    # Muestra resultados al usuario
     print("\n✅ Residuo registrado correctamente.")
     print(f"Tipo: {tipo_seleccionado} - {descripcion}")
     print(f"Tamaño estimado: {tamaño} (factor {factor})")
     print(f"Impacto estimado: {impacto_escalado['agua']}L de agua, "
           f"{impacto_escalado['energia']}kWh de energía, {impacto_escalado['co2']}kg de CO₂.")
 
-# Suma el impacto ecológico de todo lo registrado
+# Lee el archivo historial y muestra la suma total de agua, energía y CO2 ahorrados
 def ver_impacto_acumulado():
     total = {"agua": 0, "energia": 0, "co2": 0}
     if os.path.exists(HISTORIAL_FILE):
@@ -116,7 +121,7 @@ def ver_impacto_acumulado():
     print(f"⚡ Energía ahorrada: {round(total['energia'], 2)}kWh")
     print(f"🌱 CO₂ reducido: {round(total['co2'], 2)}kg")
 
-# Borra el historial guardado
+# Elimina el archivo de historial si existe
 def limpiar_historial():
     if os.path.exists(HISTORIAL_FILE):
         os.remove(HISTORIAL_FILE)
@@ -124,7 +129,7 @@ def limpiar_historial():
     else:
         print("No hay historial para limpiar.")
 
-# Menú principal del programa
+# Menú principal del programa que ofrece al usuario distintas opciones para interactuar con la app
 def menu():
     while True:
         print("\n=== ♻️ ReciclApp - Menú Principal ===")
@@ -146,5 +151,6 @@ def menu():
         else:
             print("⚠️ Opción inválida. Intente nuevamente.")
 
-# Inicia el programa
+# Llamada inicial para ejecutar el programa
 menu()
+#Los emojis fuerona añadidos para mejorar el menu ya que es lo unico que ve el usuario

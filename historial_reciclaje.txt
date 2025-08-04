@@ -5,3 +5,5 @@
 {"tipo": "cart\u00f3n", "tama\u00f1o": "peque\u00f1o", "factor_tama\u00f1o": 0.8, "impacto": {"agua": 1.6, "energia": 0.24, "co2": 0.08}}
 {"tipo": "botella de pl\u00e1stico", "descripcion": "botella levite 2l", "tama\u00f1o": "grande", "factor_tama\u00f1o": 1.5, "impacto": {"agua": 4.5, "energia": 0.75, "co2": 0.3}}
 {"tipo": "no reciclable (pa\u00f1ales, papel sucio, pilas, etc)", "descripcion": "caca de perro", "tama\u00f1o": "peque\u00f1o", "factor_tama\u00f1o": 0.8, "impacto": {"agua": 0.0, "energia": 0.0, "co2": 0.0}}
+{"tipo": "pl\u00e1stico", "descripcion": "lata de cochlo", "tama\u00f1o": "peque\u00f1o", "factor_tama\u00f1o": 0.8, "impacto": {"agua": 2.4, "energia": 0.4, "co2": 0.16}}
+{"tipo": "electr\u00f3nico", "descripcion": "placamadre", "tama\u00f1o": "grande", "factor_tama\u00f1o": 1.5, "impacto": {"agua": 15.0, "energia": 7.5, "co2": 3.0}}
